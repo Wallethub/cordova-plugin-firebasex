@@ -140,17 +140,21 @@ module.exports = {
     ensureRunpathSearchPath: function(context, xcodeProjectPath){
 
         function addRunpathSearchBuildProperty(proj, build) {
-            const LD_RUNPATH_SEARCH_PATHS = proj.getBuildProperty("LD_RUNPATH_SEARCH_PATHS", build);
+            /** @type {string} */
+            var LD_RUNPATH_SEARCH_PATHS = proj.getBuildProperty("LD_RUNPATH_SEARCH_PATHS", build);
             if (!LD_RUNPATH_SEARCH_PATHS) {
                 proj.addBuildProperty("LD_RUNPATH_SEARCH_PATHS", "\"$(inherited) @executable_path/Frameworks\"", build);
             }
+
+            if(Array.isArray(LD_RUNPATH_SEARCH_PATHS)) LD_RUNPATH_SEARCH_PATHS = LD_RUNPATH_SEARCH_PATHS.join(" ");
+
             if (LD_RUNPATH_SEARCH_PATHS.indexOf("@executable_path/Frameworks") == -1) {
-                var newValue = LD_RUNPATH_SEARCH_PATHS.substr(0, LD_RUNPATH_SEARCH_PATHS.length - 1);
+                var newValue = LD_RUNPATH_SEARCH_PATHS.substring(0, LD_RUNPATH_SEARCH_PATHS.length - 1);
                 newValue += ' @executable_path/Frameworks\"';
                 proj.updateBuildProperty("LD_RUNPATH_SEARCH_PATHS", newValue, build);
             }
             if (LD_RUNPATH_SEARCH_PATHS.indexOf("$(inherited)") == -1) {
-                var newValue = LD_RUNPATH_SEARCH_PATHS.substr(0, LD_RUNPATH_SEARCH_PATHS.length - 1);
+                var newValue = LD_RUNPATH_SEARCH_PATHS.substring(0, LD_RUNPATH_SEARCH_PATHS.length - 1);
                 newValue += ' $(inherited)\"';
                 proj.updateBuildProperty("LD_RUNPATH_SEARCH_PATHS", newValue, build);
             }
