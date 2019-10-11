@@ -12,9 +12,9 @@
 		<engine name="cordova-ios" version=">=5" />
 	</engines>
 
-	<preference name="FIREBASE_ANALYTICS_COLLECTION_ENABLED" default="true" />
-	<preference name="FIREBASE_PERFORMANCE_COLLECTION_ENABLED" default="true" />
-	<preference name="FIREBASE_CRASHLYTICS_COLLECTION_ENABLED" default="true" />
+	<preference name="FIREBASE_ANALYTICS_COLLECTION_ENABLED" default="false" />
+	<preference name="FIREBASE_PERFORMANCE_COLLECTION_ENABLED" default="false" />
+	<preference name="FIREBASE_CRASHLYTICS_COLLECTION_ENABLED" default="false" />
 
 	<platform name="android">
 		<js-module name="FirebasePlugin" src="www/firebase.js">
@@ -53,7 +53,7 @@
 		<source-file src="src/android/FirebasePluginMessageReceiverManager.java" target-dir="src/org/apache/cordova/firebase" />
 		<source-file src="src/android/JavaScriptException.java" target-dir="src/org/apache/cordova/firebase"/>
 
-		
+		<source-file src="src/android/colors.xml" target-dir="res/values" />
 		<preference name="ANDROID_ICON_ACCENT" default="#FF06D3D3" />
 		<config-file target="res/values/colors.xml" parent="/resources">
 			<color name="accent">$ANDROID_ICON_ACCENT</color>

@@ -63,8 +63,10 @@ module.exports = {
             if (nativeTargetId.indexOf("_comment") !== -1) {
                 continue;
             }
-
+            
             var nativeTarget = xcodeProject.hash.project.objects.PBXNativeTarget[nativeTargetId];
+            // skip over app extension target
+            if(nativeTarget.productType && nativeTarget.productType == '"com.apple.product-type.app-extension"') continue;
 
             nativeTarget.buildPhases.push({
                 value: id,
