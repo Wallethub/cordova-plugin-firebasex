@@ -23,6 +23,4 @@ cdvPluginPostBuildExtras.add({
     crashlytics {
         enableNdk true
     }
-
-    googleServices { disableVersionCheck = true }
 })
