@@ -45,7 +45,6 @@ public class FirebasePluginMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(String refreshedToken) {
         try{
-            super.onNewToken(refreshedToken);
             Log.d(TAG, "Refreshed token: " + refreshedToken);
             FirebasePlugin.sendToken(refreshedToken);
         }catch (Exception e){

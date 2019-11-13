@@ -33,6 +33,9 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+
 import io.fabric.sdk.android.Fabric;
 
 import org.apache.cordova.CallbackContext;
@@ -58,6 +61,8 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+
+import androidx.annotation.NonNull;
 
 public class FirebasePlugin extends CordovaPlugin {
 
@@ -289,19 +294,6 @@ public class FirebasePlugin extends CordovaPlugin {
 
     private void onTokenRefresh(final CallbackContext callbackContext) {
         FirebasePlugin.tokenRefreshCallbackContext = callbackContext;
-
-        cordova.getThreadPool().execute(new Runnable() {
-            public void run() {
-                try {
-                    String currentToken = FirebaseInstanceId.getInstance().getToken();
-                    if (currentToken != null) {
-                        FirebasePlugin.sendToken(currentToken);
-                    }
-                } catch (Exception e) {
-                    handleExceptionWithContext(e, callbackContext);
-                }
-            }
-        });
     }
 
     public static void sendMessage(Bundle bundle, Context context) {
@@ -388,8 +380,20 @@ public class FirebasePlugin extends CordovaPlugin {
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
                 try {
-                    String token = FirebaseInstanceId.getInstance().getToken();
-                    callbackContext.success(token);
+                    FirebaseInstanceId.getInstance().getInstanceId()
+                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                            if (!task.isSuccessful()) {
+                                Log.w(TAG, "getInstanceId failed", task.getException());
+                                return;
+                            }
+
+                            // Get new Instance ID token
+                            String token = task.getResult().getToken();
+                            callbackContext.success(token);
+                        }
+                    });
                 } catch (Exception e) {
                     handleExceptionWithContext(e, callbackContext);
                 }
