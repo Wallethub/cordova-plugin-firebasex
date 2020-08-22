@@ -76,6 +76,8 @@
 		<framework src="com.google.firebase:firebase-crashlytics-ndk:17.2.1" />
         <framework src="com.google.code.gson:gson:2.8.6" />
 
+        <framework src="com.google.android.gms:play-services-auth:17.0.0" />
+
 	</platform>
 
 	<platform name="ios">
