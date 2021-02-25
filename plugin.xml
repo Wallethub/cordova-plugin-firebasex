@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-plugin-firebasex" version="11.0.3"
+<plugin id="cordova-plugin-firebasex" version="11.0.4"
 		xmlns="http://apache.org/cordova/ns/plugins/1.0"
 		xmlns:android="http://schemas.android.com/apk/res/android">
 	<name>Google Firebase Plugin</name>
@@ -64,20 +64,18 @@
 		<preference name="ANDROID_PLAY_SERVICES_TAGMANAGER_VERSION" default="17.0.0" />
 
 		<framework src="com.google.android.gms:play-services-tagmanager:17.0.0" />
-		<framework src="com.google.android.gms:play-services-auth:18.1.0" />
-		<framework src="com.google.firebase:firebase-analytics:17.5.0" />
-		<framework src="com.google.firebase:firebase-messaging:20.3.0" />
-		<framework src="com.google.firebase:firebase-config:19.2.0" />
-		<framework src="com.google.firebase:firebase-perf:19.0.9" />
-		<framework src="com.google.firebase:firebase-auth:19.4.0" />
-        	<framework src="com.google.firebase:firebase-inappmessaging:19.1.1" />
-		<framework src="com.google.firebase:firebase-inappmessaging-display:19.1.1" />
-		<framework src="com.google.firebase:firebase-firestore:21.7.0" />
-		<framework src="com.google.firebase:firebase-crashlytics:17.2.2" />
-		<framework src="com.google.firebase:firebase-crashlytics-ndk:17.2.2" />
-        	<framework src="com.google.code.gson:gson:2.8.6" />
-
-      
+		<framework src="com.google.android.gms:play-services-auth:19.0.0" />
+		<framework src="com.google.firebase:firebase-analytics:18.0.2" />
+		<framework src="com.google.firebase:firebase-messaging:21.0.1" />
+		<framework src="com.google.firebase:firebase-config:20.0.3" />
+		<framework src="com.google.firebase:firebase-perf:19.1.1" />
+		<framework src="com.google.firebase:firebase-auth:20.0.2" />
+        <framework src="com.google.firebase:firebase-inappmessaging:19.1.4" />
+		<framework src="com.google.firebase:firebase-inappmessaging-display:19.1.4" />
+		<framework src="com.google.firebase:firebase-firestore:22.1.0" />
+		<framework src="com.google.firebase:firebase-crashlytics:17.3.1" />
+		<framework src="com.google.firebase:firebase-crashlytics-ndk:17.3.1" />
+        <framework src="com.google.code.gson:gson:2.8.6" />
 
 	</platform>
 
@@ -125,14 +123,15 @@
 				<source url="https://cdn.cocoapods.org/"/>
 			</config>
 			<pods use-frameworks="true">
-				<pod name="Firebase/Core" spec="6.34.0"/>
-				<pod name="Firebase/Auth" spec="6.34.0"/>
-				<pod name="Firebase/Messaging" spec="6.34.0"/>
-				<pod name="Firebase/Performance" spec="6.34.0"/>
-				<pod name="Firebase/RemoteConfig" spec="6.34.0"/>
-				<pod name="Firebase/InAppMessaging" spec="6.34.0"/>
-				<pod name="FirebaseFirestore" git="https://github.com/invertase/firestore-ios-sdk-frameworks.git" tag="6.34.0"/>
-				<pod name="Firebase/Crashlytics" spec="6.34.0"/>
+				<pod name="Firebase/Core" />
+				<pod name="Firebase/Auth" />
+				<pod name="Firebase/Messaging" />
+				<pod name="Firebase/Performance" />
+				<pod name="Firebase/RemoteConfig" />
+				<pod name="Firebase/InAppMessaging" />
+                <pod name="Firebase/Analytics" />
+				<pod name="FirebaseFirestore" git="https://github.com/invertase/firestore-ios-sdk-frameworks.git" tag="7.7.0"/>
+				<pod name="Firebase/Crashlytics" />
 				<pod name="GoogleSignIn" spec="5.0.2"/>
 				<pod name="GoogleTagManager" spec="7.1.4"/>
 			</pods>
