@@ -1,6 +1,7 @@
 #import "AppDelegate+FirebasePlugin.h"
 #import "FirebasePlugin.h"
 #import "Firebase.h"
+#import "FirebaseInAppMessaging.h"
 #import <objc/runtime.h>
 
 
@@ -25,7 +26,6 @@ static AppDelegate* instance;
 static NSDictionary* mutableUserInfo;
 static FIRAuthStateDidChangeListenerHandle authStateChangeListener;
 static bool authStateChangeListenerInitialized = false;
-static bool shouldEstablishDirectChannel = false;
 
 + (void)load {
     Method original = class_getInstanceMethod(self, @selector(application:didFinishLaunchingWithOptions:));
@@ -73,13 +73,10 @@ static bool shouldEstablishDirectChannel = false;
             isFirebaseInitializedWithPlist = true;
         }
         
-      
-        
-        shouldEstablishDirectChannel = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"shouldEstablishDirectChannel"] boolValue];
+    
 
         // Set FCM messaging delegate
         [FIRMessaging messaging].delegate = self;
-        [FIRMessaging messaging].shouldEstablishDirectChannel = shouldEstablishDirectChannel;
         
         // Setup Firestore
         [FirebasePlugin setFirestore:[FIRFirestore firestore]];
@@ -102,7 +99,7 @@ static bool shouldEstablishDirectChannel = false;
 
         // Set NSNotificationCenter observer
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenRefreshNotification:)
-                                                     name:kFIRInstanceIDTokenRefreshNotification object:nil];
+                                                     name:FIRMessagingRegistrationTokenRefreshedNotification object:nil];
 
         self.applicationInBackground = @(YES);
         
@@ -115,14 +112,10 @@ static bool shouldEstablishDirectChannel = false;
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     self.applicationInBackground = @(NO);
-    [FIRMessaging messaging].shouldEstablishDirectChannel = shouldEstablishDirectChannel;
-    [FirebasePlugin.firebasePlugin _logMessage:[NSString stringWithFormat:@"Enter foreground: FCM direct channel = %@", shouldEstablishDirectChannel ? @"true" : @"false"]];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     self.applicationInBackground = @(YES);
-    [FIRMessaging messaging].shouldEstablishDirectChannel = false;
-    [FirebasePlugin.firebasePlugin _logMessage:@"Enter background: FCM direct channel = false"];
 }
 
 # pragma mark - Google SignIn
@@ -179,11 +172,11 @@ didDisconnectWithUser:(GIDGoogleUser *)user
     // time. So if you need to retrieve the token as soon as it is available this is where that
     // should be done.
     @try{
-        [[FIRInstanceID instanceID] instanceIDWithHandler:^(FIRInstanceIDResult * _Nullable result,
+        [[FIRInstallations installations] installationIDWithCompletion:^(NSString * _Nullable result,
                                                             NSError * _Nullable error) {
             @try{
                 if (error == nil) {
-                    NSString *refreshedToken = result.token;
+                    NSString *refreshedToken = result;
                     [FirebasePlugin.firebasePlugin _logMessage:[NSString stringWithFormat:@"tokenRefreshNotification: %@", refreshedToken]];
                     [FirebasePlugin.firebasePlugin sendToken:refreshedToken];
                 }else{
@@ -240,24 +233,6 @@ didDisconnectWithUser:(GIDGoogleUser *)user
         if([self.applicationInBackground isEqual:[NSNumber numberWithBool:YES]] || !isContentAvailable){
             [FirebasePlugin.firebasePlugin sendNotification:mutableUserInfo];
         }
-    }@catch (NSException *exception) {
-        [FirebasePlugin.firebasePlugin handlePluginExceptionWithoutContext:exception];
-    }
-}
-
-// Receive data messages on iOS 10+ directly from FCM (bypassing APNs) when the app is in the foreground.
-// Called when a data message is arrives in the foreground and remote notifications permission has been NOT been granted
-- (void)messaging:(FIRMessaging *)messaging didReceiveMessage:(FIRMessagingRemoteMessage *)remoteMessage {
-    @try{
-        [FirebasePlugin.firebasePlugin _logMessage:[NSString stringWithFormat:@"didReceiveMessage: %@", remoteMessage.appData]];
-        
-        NSDictionary* appData = [remoteMessage.appData mutableCopy];
-        [appData setValue:@"data" forKey:@"messageType"];
-        [self processMessageForForegroundNotification:appData];
-     
-        // This will allow us to handle FCM data-only push messages even if the permission for push
-        // notifications is yet missing. This will only work when the app is in the foreground.
-        [FirebasePlugin.firebasePlugin sendNotification:appData];
     }@catch (NSException *exception) {
         [FirebasePlugin.firebasePlugin handlePluginExceptionWithoutContext:exception];
     }
@@ -486,12 +461,6 @@ didDisconnectWithUser:(GIDGoogleUser *)user
     }@catch (NSException *exception) {
         [FirebasePlugin.firebasePlugin handlePluginExceptionWithoutContext:exception];
     }
-}
-
-// Receive data message on iOS 10 devices.
-- (void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
-    // Print full message
-    [FirebasePlugin.firebasePlugin _logInfo:[NSString stringWithFormat:@"applicationReceivedRemoteMessage: %@", [remoteMessage appData]]];
 }
 
 // Apple Sign In
